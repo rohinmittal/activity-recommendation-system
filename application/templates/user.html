@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<script src="js/jquery-1.11.0.min.js" type="text/javascript"></script>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+
+<html>
+<head>
+	<title>{{user.username}}'s Profile</title>
+</head>
+
+<body> 
+<h1>{{user.username}}'s Profile </h1>
+<p align="right" style="background-color:yellow;padding-top:5px;padding-bottom:5px;">
+        <a href={{url_for('home')}}>Search</a>&emsp;
+        <a href={{url_for('user', username=session['name'])}}>{{session['name']}}'s Profile</a>&emsp; 
+        <a href={{url_for('logout')}}>Logout</a>
+</p>
+
+{% for review in user.reviews|reverse %}
+<div id="boxxedtext">
+Activity: <a href="{{url_for('activity', id = db.data.find_one({"title" : review.activity})["_id"] ) }}">{{review.activity}}</a><br>
+Review: <b>{{review.text}}</b><br>
+Sentiment: {{review.sentiment}}<br><br>
+</div>
+{% endfor %}
+
+</body>
+</html>

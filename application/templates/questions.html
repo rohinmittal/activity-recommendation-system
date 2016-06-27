@@ -1,0 +1,29 @@
+<html>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+<body>
+<h1>Welcome <i>{{session['name']}}</i></h1>
+<form action="" method="post">
+<input type="submit" value="Rate Activities">
+{% for cluster in questions %}
+<div id="boxxedtext" style="margin:10px;">
+	<b>{{questions[cluster].title}}</b><br>
+	<div id="image" style="display:inline-block;">
+		<img src="{{questions[cluster].image_url}}" align="middle" width="100px" height="100px"></img>
+	</div>
+	<div id="details" style="display:inline-block;">
+		{% for each in questions[cluster].categories %} 
+		 || {{each}}
+		{% endfor %}
+		||
+		<br>
+		<input type="radio" name="{{cluster}}" value="1">1&emsp;
+		<input type="radio" name="{{cluster}}" value="2">2&emsp;
+		<input type="radio" name="{{cluster}}" value="3">3&emsp;
+		<input type="radio" name="{{cluster}}" value="4">4&emsp;
+		<input type="radio" name="{{cluster}}" value="5">5&emsp;
+	</div>
+</div>
+{% endfor %}
+</form>
+</body>
+</html>

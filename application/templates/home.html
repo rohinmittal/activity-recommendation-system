@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<script src="js/jquery-1.11.0.min.js" type="text/javascript"></script>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+
+<html>
+<head>
+	<title>Activity Recommendation System</title>
+</head>
+
+<script type="text/javascript">
+var map;
+function getLocation() {
+	if ({{lat}} != 0 && {{lng}} != 0 ) {
+		document.getElementById("Latitude").value = {{lat}};
+		document.getElementById("Longitude").value = {{lng}}; 
+		var initialLocation =  {lat: {{lat}}, lng: {{lng}}};
+		initialMarker(initialLocation);
+	}
+	else if (navigator.geolocation) {
+		navigator.geolocation.getCurrentPosition(onGeoSuccess, onGeoError);
+	}
+}
+
+function onGeoSuccess(event) {
+	document.getElementById("Latitude").value = event.coords.latitude;
+	document.getElementById("Longitude").value = event.coords.longitude;
+	
+	var initialLocation =  {lat: event.coords.latitude, lng: event.coords.longitude};
+	initialMarker(initialLocation);
+}
+
+function initialMarker(location) {
+	var image = {
+		url : "http://www.clker.com/cliparts/g/R/z/I/u/o/map-pin-md.png",
+		scaledSize: new google.maps.Size(25, 40)
+	};
+	var marker = new google.maps.Marker({
+		position: location, 
+		map : map,
+		icon: image
+	});
+	map.setCenter(location);
+}
+
+function onGeoError(event) {
+	alert("Error code " + event.code + ". " + event.message);
+}
+
+function initMap() {
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: {lat: {{lat}}, lng: {{lng}}},
+		zoom: 10
+	});
+	infowindow = new google.maps.InfoWindow();
+
+	{% if results %}
+	results = {{results|tojson}};
+	{% endif %}
+	for(var i = 0; i < results.length; ++i) {
+		createMarker(results[i]);
+	}
+	google.maps.event.addDomListener(window, 'load', initialize);
+}
+
+var infowindow;
+function createMarker(place) {
+	var placeLoc = new google.maps.LatLng(place.location[0], place.location[1]);
+	var marker = new google.maps.Marker({
+			map: map,
+			position: placeLoc 
+		});
+	
+	var contentString = 'Title : <b>' + place.title + '</b><br>' + 
+		'Address : <b>' + place.address + '</b><br>' +
+		'Activity Duration <b>: ' + (place.activityDuration/60.0) + ' hours' + '</b><br>' +
+		'Travel Time : <b>' + String((place.totalTime - place.activityDuration)/60.0) + ' hours' + '</b><br>'; 
+
+	google.maps.event.addListener(marker, 'click', function() {
+			infowindow.setContent(contentString);
+			infowindow.open(map, marker);
+		});
+}
+
+function togglediv(id) {
+	var div = document.getElementById(id);
+	div.style.display = div.style.display == "none" ? "block" : "none";
+}
+
+</script>
+<p align="center">
+<font size=40>Activity Recommendation System</font>
+</p>
+
+<p align="right" style="background-color:yellow;padding-top:5px;padding-bottom:5px;">
+<b>
+	<a href={{url_for('home')}}>Search</a>&emsp;
+	<a href={{url_for('user', username=session['name'])}}>{{session['name']}}'s Profile</a>&emsp; 
+	<a href={{url_for('logout')}}>Logout</a>
+</b>
+</p>
+<body onload = "getLocation()">
+<div id="searchheader">
+	<form action="" method="post">
+		<input type="text" placeholder="Time (minutes)" name="time" value="{{ request.form.time }}">
+		<select name="mode">
+			{% for mode in modes %}
+			<option value="{{ mode }}">{{mode}}</option>
+			{% endfor %}
+		</select>
+		<select name="mood">
+			{% for mood in moods %}
+			<option value="{{ mood }}">{{mood}}</option>
+			{% endfor %}
+		</select>
+		<input type="hidden" id="Latitude" name="latitude" value="{{ request.form.latitude }}">
+		<input type="hidden" id="Longitude" name="longitude" value="{{ request.form.longitude }}">
+		<input type="text" placeholder="Address (optional)" id="Location" name="location" value="{{ request.form.location }}">
+		<input type="submit" value="Submit">
+		<br><br>
+	</form>
+	{% if error %}
+	<b>Error:</b> {{ error }}
+	{% endif %}
+</div>
+
+<div id="map"></div>
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap"async defer></script>
+
+<button onclick="togglediv('reviewed')"><b>Hide Reviewed Activities!</b></button>
+<div id="activities">
+{% for result in results %}
+	{% if result.alreadyReviewed == True %}
+	<div id="reviewed">
+	{% endif %}
+	<div id="boxxedtext">
+		<a href={{url_for('activity', id=result.id)}}>{{result.title}}</a><br>
+		<div id="image" style="display:inline-block;">
+			<img src={{result.image_url}} align="middle" width="100px" height="100px"></img>
+		</div>
+		<div id="details" style="display:inline-block;">
+			<br>
+			{{result.address}}<br>
+			Activity Duration: {{result.activityDuration|int}} minutes<br>
+			Total Time: {{result.totalTime|int}} minutes<br>
+		</div>
+	</div>
+	{% if result.alreadyReviewed == True %}
+	</div>
+	{% endif %}
+{% endfor %}
+{% if results|count == 0 %}
+<b> No activities!! </b>
+{% endif %}
+</div>
+
+</body>
+</html>

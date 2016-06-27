@@ -1,0 +1,62 @@
+#searchheader {
+}
+
+#map { 
+width:700px;
+height:550px;
+float:left;
+padding:5px;
+}
+
+#activities { 
+width:500px;
+height:550px;
+float:left;
+padding:10px;
+overflow:scroll;
+}
+
+#boxxedtext {
+border:1px solid black;
+padding-bottom:6px;
+padding-top:6px;
+padding-left:6px;
+padding-right:6px;
+}
+
+#activityHeader { 
+border:1px solid black;
+padding-bottom:6px;
+padding-top:6px;
+padding-left:6px;
+padding-right:6px;
+height:150px;
+overflow:scroll;
+}
+
+#activityreviews { 
+width:500px;
+height:450px;
+float:left;
+padding:10px;
+}
+
+#reviews { 
+width:500px;
+height:350px;
+float:left;
+padding:10px;
+overflow:scroll;
+}
+
+#keyword {
+background-color:#AFEEEE;
+border:1px solid black;
+       border-radius:7px;
+       line-height:130%;
+display:inline;
+padding-bottom:1px;
+padding-top:1px;
+padding-left:1px;
+padding-right:1px;
+}

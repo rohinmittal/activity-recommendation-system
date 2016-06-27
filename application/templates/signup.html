@@ -1,0 +1,25 @@
+<html>
+<head>
+	<title>Signup Page</title>
+</head>
+<body>
+<div class="container">
+	<h1>Please Signup</h1>
+	<br>
+	<form action="" method="post">
+		<input type="text" placeholder="Username" name="username" value="{{ request.form.username }}">
+		<br>
+		<input type="password" placeholder="Password" name="password" value="{{ request.form.password }}">
+		<br>
+		<input type="password" placeholder="Password Again" name="repassword" value="{{ request.form.repassword }}">
+		<br>
+		<input type="submit" value="Signup!">
+	</form>
+	{% if error %}
+	<p class="error"><strong>Error:</strong> {{ error }}
+	{% endif %}
+	<br>
+	<i>Already have an account? <a href="{{url_for('login')}}">Login here</a></i>
+</div>
+</body>
+</html>

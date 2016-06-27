@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<script src="js/jquery-1.11.0.min.js" type="text/javascript"></script>
+<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='style.css') }}">
+
+<html>
+<head>
+	<title>{{activity.title}}</title>
+</head>
+
+<script type="text/javascript">
+var map;
+var infowindow;
+function initMap() {
+	var initialLocation =  {lat: {{activity.location[0]}}, lng: {{activity.location[1]}}};
+	map = new google.maps.Map(document.getElementById('map'), {
+		center: initialLocation, 
+		zoom: 10
+	});
+	var marker = new google.maps.Marker({
+		position: initialLocation, 
+		map : map,
+	});
+	map.setCenter(initialLocation);
+	infowindow = new google.maps.InfoWindow();
+	var contentString = 'Title : <b>' + "{{activity.title}}" + '</b><br>' + 
+		'Address : <b>' + "{{activity.address}}" + '</b><br>' +
+		'Activity Duration <b>: ' + ("{{activity.activityDuration}}"/60.0) + ' hours' + '</b><br>' +
+		'Travel Time : <b>' + String(("{{activity.totalTime}}" - "{{activity.activityDuration}}")/60.0) + ' hours' + '</b><br>'; 
+
+	infowindow.setContent(contentString);
+	infowindow.open(map, marker);
+}
+</script>
+
+
+<body> 
+<p align="center">
+<font size=40>{{activity.title}}</font>
+</p>
+
+<p align="right" style="background-color:yellow;padding-top:5px;padding-bottom:5px;">
+<b>
+	{% if wikiurl != "" %}
+	<i>        <a href={{wikiurl}} target="_blank">wiki url</a></i>&emsp;
+	{% endif %} 
+        <a href={{url_for('home')}}>Search</a>&emsp;
+        <a href={{url_for('user', username=session['name'])}}>{{session['name']}}'s Profile</a>&emsp; 
+        <a href={{url_for('logout')}}>Logout</a>
+</p>
+</b>
+<div id="activityHeader">
+	<br>
+	{% for ind in range(0, 100) %}
+	{% if activity.features[ind]|length > 0 %} 
+	<div id="keyword">{{activity.features[ind]}}</div>
+	{% endif %}
+	{% endfor %}
+</div>
+
+<div id="map" style="width:400px;height:400px;"></div>
+
+<div id="activityreviews">
+	<form action="" method="post">
+		<textarea placeholder="What is your review" cols="70" rows="3" name="reviewText" value = {{request.form.reviewText}}></textarea>
+		<br>
+		<input type="submit" value="Submit">
+	</form>
+	<div id="reviews">
+		{% for item in activity.reviews|reverse %}
+		<div id="boxxedtext">
+			<b><a href="{{url_for('user', username=item.username)}}">{{item.username}}</a></b><br>
+			{{item.text}}
+			{% if item.sentiment == "positive" %}
+			<font color="green"><i>({{item.sentiment}})</i></font><br>
+			{% else %}
+			<font color="red"><i>({{item.sentiment}})</i></font><br>
+			{% endif %}
+		</div>
+		{% endfor %}
+	</div>
+</div>
+
+
+<script src="https://maps.googleapis.com/maps/api/js?callback=initMap"async defer></script>
+
+</body>
+</html>
